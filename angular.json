@@ -123,6 +123,10 @@
           }
         }
       }
-    }},
-  "defaultProject": "solitaire"
+    }
+  },
+  "defaultProject": "solitaire",
+  "cli": {
+    "analytics": false
+  }
 }
