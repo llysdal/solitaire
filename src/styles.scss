@@ -1,1 +1,57 @@
-/* You can add global styles to this file, and also import other style files */
+html {
+  overflow: scroll;
+  overflow-x: hidden;
+}
+::-webkit-scrollbar {
+  width: 0;  /* Remove scrollbar space */
+  background: transparent;  /* Optional: just make scrollbar invisible */
+}
+
+@font-face {
+  font-family: vt323;
+  src: url(assets/VT323-Regular.ttf) format("truetype")
+}
+
+body {
+  background-color: black;
+  color: white;
+  font-family: vt323;
+  font-size: 2.7vw;
+
+  user-select: none; /* supported by Chrome and Opera */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+}
+
+img {
+  image-rendering: pixelated;
+  -webkit-user-drag: none;
+  -khtml-user-drag: none;
+  -moz-user-drag: none;
+  -o-user-drag: none;
+}
+
+button:active,
+button:visited,
+button:focus {
+  background-color: black !important;
+  transition: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+} 
+
+button:hover {
+  background-color: #222222 !important;
+  color: white !important;
+}
+
+button {
+  color: white !important;
+  background-color: black;
+  //border: solid 1px;
+  border: 0;
+  border-radius: 0;
+  transition: none !important;
+}

@@ -1,0 +1,70 @@
+.top {
+  margin: 1%;
+  margin-top: 0;
+  margin-bottom: 2%;
+  border-bottom: 1px solid white;
+
+  .button {
+    font-size: 2.5vw;
+    display: inline-block;
+    width: 30%;
+
+    &.hover {
+      background-color: white;
+    }
+  }
+
+  .button-text {
+    text-align: center;
+    margin-top: -4vw;
+  }
+}
+
+.center {
+  text-align: center;
+  vertical-align: middle;
+}
+
+
+.card-column {
+  display: inline-block;
+  vertical-align: top;
+  width: 14.5%;
+  margin: 1%;
+}
+
+.card {
+  margin-top: -15.5vw;
+  width: 100%;
+
+  &.selected {
+    //filter: invert(1);
+    margin-top: -13vw;
+  }
+
+  &.cheated {
+    filter: invert(1);
+    //filter: grayscale(100%) brightness(101%) sepia(50%) hue-rotate(-53deg) saturate(600%) contrast(1);
+  }
+
+  //&.selected.cheated {
+    //filter: invert(1) grayscale(100%) brightness(101%) sepia(50%) hue-rotate(-53deg) saturate(600%) contrast(1);
+  //}
+
+  transform: translate(0, -103%)
+}
+
+.first-card {
+  @extend .card;
+  margin-top: 0;
+
+  &.selected {
+    margin-top: 2.5vw;
+  }
+}
+
+.cell {
+  @extend .card;
+  margin-top: 0;
+  transform: none;
+}
