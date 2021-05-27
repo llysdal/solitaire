@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { environment } from 'src/environments/environment';
 import { Card } from './classes/card.class';
 
 @Component({
@@ -10,6 +11,7 @@ export class AppComponent implements OnInit {
 
   constructor() {}
 
+  hasInteracted = false;
   canReset = true;
 
   deck = [];
@@ -37,7 +39,15 @@ export class AppComponent implements OnInit {
       }
     }
 
+    this.state = [];
+    for (let c = 0; c < 6; c++) {
+      this.state.push([]);
+    }
+  }
+
+  boot(): void {
     this.newGame();
+    this.hasInteracted = true;
   }
 
   shuffleDeck(): void {
@@ -91,6 +101,8 @@ export class AppComponent implements OnInit {
 
 
   legalStart(col: number, row: number): boolean {
+    if (!this.canReset) { return false; }
+
     let cardVal = null;
 
     for (const card of this.state[col].slice(row)) {
@@ -187,18 +199,20 @@ export class AppComponent implements OnInit {
 
       this.finished[col] = finished;
 
-      let finishes = 0;
-      for (const finish of this.finished) {
-        if (finish) { finishes++; }
-      }
+      if (finished) {
+        let finishes = 0;
+        for (const finish of this.finished) {
+          if (finish) { finishes++; }
+        }
 
-      if (finishes === 4) {
-        this.won = true;
-        this.playAudio('win');
-        this.gamesWon++;
-        this.setCookie('won', this.gamesWon.toString());
-      } else {
-        this.playAudio('complete');
+        if (finishes === 4) {
+          this.won = true;
+          this.playAudio('win');
+          this.gamesWon++;
+          this.setCookie('won', this.gamesWon.toString());
+        } else {
+          this.playAudio('complete');
+        }
       }
     }
 
@@ -208,9 +222,15 @@ export class AppComponent implements OnInit {
 
   playAudio(name: string): void {
     const audio = new Audio();
-    audio.src = `/assets/${name}.mp3`;
+    audio.src = `assets/${name}.mp3`;
     audio.load();
-    audio.play();
+    audio.play()
+    .then(() => {
+      // Audio is playing.
+    })
+    .catch(error => {
+      console.log(error);
+    });
   }
 
 
