@@ -1,11 +1,16 @@
 <div class="row" class="top">
   <div class="col button" style="padding-bottom: 2vw;">
     <img src="/assets/button_normal.png" (click)="newGame()" style="width: 100%;">
-    <div class="button-text">Restart</div>
+    <div class="button-text" (click)="newGame()">Restart</div>
   </div>
-  <div class="col button" style=" float: right;">
-    <img src="/assets/button_normal.png" (click)="undo()" style="width: 100%;">
-    <div class="button-text">Undo</div>
+  <div class="col" style="display: inline-block; width: 40%; font-size: 2.7vw; vertical-align: bottom; padding-bottom: 0.5vw;">
+    <div class="row" style="text-align: center;">
+      {{gamesPlayed}} played, {{gamesWon}} won.
+    </div>
+  </div>
+  <div class="col button" style="float: right;">
+    <img src="/assets/button_normal.png" style="width: 100%;">
+    <div class="button-text">{{moves}} moves</div>
   </div>
 </div>
 

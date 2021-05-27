@@ -1,5 +1,4 @@
-import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
-import { Component, ComponentFactoryResolver, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Card } from './classes/card.class';
 
 @Component({
@@ -11,6 +10,8 @@ export class AppComponent implements OnInit {
 
   constructor() {}
 
+  canReset = true;
+
   deck = [];
   state = null;
   finished = [false, false, false, false, false, false];
@@ -18,7 +19,16 @@ export class AppComponent implements OnInit {
   selected = null;
   selectedPos: {col: number, row: number} = null;
 
+  gamesPlayed = 0;
+  gamesWon = 0;
+  moves = 0;
+
   ngOnInit(): void {
+    this.gamesPlayed = parseInt(this.getCookie('played'), 10);
+    if (!this.gamesPlayed) { this.gamesPlayed = 0; }
+    this.gamesWon = parseInt(this.getCookie('won'), 10);
+    if (!this.gamesWon) { this.gamesWon = 0; }
+
     this.deck = [];
 
     for (let s = 0; s < 4; s++) {
@@ -38,6 +48,13 @@ export class AppComponent implements OnInit {
   }
 
   newGame(): void {
+    if (!this.canReset) { return; }
+
+    this.canReset = false;
+
+    this.gamesPlayed++;
+    this.setCookie('played', this.gamesPlayed.toString());
+
     //this.deck = this.deck.reverse();
     this.shuffleDeck();
 
@@ -46,20 +63,25 @@ export class AppComponent implements OnInit {
       this.state.push([]);
     }
 
+    const delay = 90;
+    const variation = 10;
     this.deck.forEach((card, index) => {
-      card.cheated = false;
-      this.state[Math.floor(index / 6)][index % 6] = card;
+      setTimeout(() => {
+        card.cheated = false;
+        //this.state[Math.floor(index / 9)][index % 9] = card;
+        this.state[index % 6][Math.floor(index / 6)] = card;
+        this.playAudio('place');
+        if (index === this.deck.length - 1) {
+          this.canReset = true;
+        }
+      }, index * delay + Math.random() * variation - variation / 2);
     });
 
+    this.moves = 0;
     this.selected = null;
     this.finished = [false, false, false, false, false, false];
     this.won = false;
   }
-
-  undo(): void {
-
-  }
-
 
   cardIsSelected(col: number, row: number): boolean {
     return this.selected
@@ -171,10 +193,14 @@ export class AppComponent implements OnInit {
       if (finishes === 4) {
         this.won = true;
         this.playAudio('win');
+        this.gamesWon++;
+        this.setCookie('won', this.gamesWon.toString());
       } else {
         this.playAudio('complete');
       }
     }
+
+    this.moves++;
     this.playAudio('place');
   }
 
@@ -184,4 +210,29 @@ export class AppComponent implements OnInit {
     audio.load();
     audio.play();
   }
+
+
+
+
+  private getCookie(name: string) {
+    const ca: Array<string> = document.cookie.split(';');
+    const caLen: number = ca.length;
+    const cookieName = `${name}=`;
+    let c: string;
+
+    for (let i = 0; i < caLen; i += 1) {
+        c = ca[i].replace(/^\s+/g, '');
+        if (c.indexOf(cookieName) === 0) {
+            return c.substring(cookieName.length, c.length);
+        }
+    }
+    return '';
+}
+
+private setCookie(name: string, value: string) {
+    const d: Date = new Date();
+    d.setFullYear(2037);
+    const expires = `expires=${d.toUTCString()}`;
+    document.cookie = `${name}=${value}; ${expires}`;
+}
 }
