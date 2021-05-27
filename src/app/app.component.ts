@@ -142,7 +142,9 @@ export class AppComponent implements OnInit {
         this.playAudio('lift');
       }
     } else {
-      if (card === this.selected) {
+      if (card === this.selected
+        || (col === this.selectedPos.col
+            && row === this.selectedPos.row - 1)) {
         this.selected = null;
         this.playAudio('place');
       }
