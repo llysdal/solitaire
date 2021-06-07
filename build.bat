@@ -1,0 +1,1 @@
+ng build --aot --base-href solitaire --prod
