@@ -8,14 +8,14 @@ html {
 }
 
 @font-face {
-  font-family: vt323;
-  src: url(assets/VT323-Regular.ttf) format("truetype")
+  font-family: alagard;
+  src: url(assets/alagard.ttf) format("truetype")
 }
 
 body {
   background-color: black;
   color: white;
-  font-family: vt323;
+  font-family: alagard;
   font-size: 2.7vw;
 
   user-select: none; /* supported by Chrome and Opera */
