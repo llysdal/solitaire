@@ -11,12 +11,12 @@
   </div>
   <div class="col" style="display: inline-block; width: 40%; font-size: 2.7vw; vertical-align: bottom; padding-bottom: 0.5vw;">
     <div class="row" style="text-align: center;">
-      {{gamesPlayed}} played, {{gamesWon}} won.
+      {{gamesPlayed}} played, {{gamesWon}} won, {{gameStreak}} streak.
     </div>
   </div>
   <div class="col button" style="float: right;">
-    <img src="assets/button_border_normal.png" style="width: 100%;">
-    <div class="button-text">{{moves}} moves</div>
+    <img src="assets/button_border_normal.png" (click)="undo()" style="width: 100%;">
+    <div class="button-text" (click)="undo()">{{moves}} moves</div>
   </div>
 </div>
 
@@ -30,7 +30,7 @@
     </div>
     <div *ngIf="!finished[col]">
       <div *ngFor="let card of cardCol; let first = first; let row = index;">
-        <img [src]="card.img()" 
+        <img [src]="card.img()"
             [ngClass]="[first ? 'first-card' : 'card', cardIsSelected(col, row) ? 'selected' : '', card.cheated ? 'cheated' : '']"
             (click)="onCardClick(card, col, row)">
       </div>

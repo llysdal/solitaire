@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { Card } from './classes/card.class';
+import * as cloneDeep from 'lodash/cloneDeep';
 
 @Component({
   selector: 'app-root',
@@ -17,12 +18,19 @@ export class AppComponent implements OnInit {
   deck = [];
   state = null;
   finished = [false, false, false, false, false, false];
-  won = false;
+  won = true;
+  streak = 0;
   selected = null;
   selectedPos: {col: number, row: number} = null;
 
+  undoState = [];
+  undoCheated = [];
+  undoFinished = [];
+  didMoveNotUndo = true;
+
   gamesPlayed = 0;
   gamesWon = 0;
+  gameStreak = 0;
   moves = 0;
 
   ngOnInit(): void {
@@ -30,6 +38,9 @@ export class AppComponent implements OnInit {
     if (!this.gamesPlayed) { this.gamesPlayed = 0; }
     this.gamesWon = parseInt(this.getCookie('won'), 10);
     if (!this.gamesWon) { this.gamesWon = 0; }
+    this.gameStreak = parseInt(this.getCookie('streak'), 10);
+    if (!this.gameStreak) { this.gameStreak = 0; }
+
 
     this.deck = [];
 
@@ -64,6 +75,10 @@ export class AppComponent implements OnInit {
 
     this.gamesPlayed++;
     this.setCookie('played', this.gamesPlayed.toString());
+    if (this.won != true) {
+      this.gameStreak = 0;
+      this.setCookie('streak', this.gameStreak.toString());
+    }
 
     //this.deck = this.deck.reverse();
     this.shuffleDeck();
@@ -90,6 +105,8 @@ export class AppComponent implements OnInit {
     this.moves = 0;
     this.selected = null;
     this.finished = [false, false, false, false, false, false];
+    this.undoState = [];
+    this.didMoveNotUndo = true;
     this.won = false;
   }
 
@@ -131,12 +148,18 @@ export class AppComponent implements OnInit {
 
     if (this.selected.value === this.state[col][row].value - 1) {
       // legit move
+      this.undoState = this.state.map(x => x.slice());
+      this.undoFinished = this.finished.map(x => x);
+      this.undoCheated = this.deck.map(x => x.cheated);
       this.selected.cheated = false;
       return true;
     }
     else if (this.selectedPos.row === this.state[this.selectedPos.col].length - 1) {
       // cheating (single card has been moved)
       if (!this.state[this.selectedPos.col][this.selectedPos.row].cheated) { // can't cheat a cheated card
+        this.undoState = this.state.map(x => x.slice());
+        this.undoFinished = this.finished.map(x => x);
+        this.undoCheated = this.deck.map(x => x.cheated);
         this.selected.cheated = true;
         return true;
       }
@@ -179,6 +202,8 @@ export class AppComponent implements OnInit {
   }
 
   move(col: number): void {
+    this.didMoveNotUndo = true;
+
     const temp = this.state[this.selectedPos.col].splice(this.selectedPos.row, 50);
     this.state[col] = [...this.state[col], ...temp];
     this.selected = null;
@@ -206,10 +231,7 @@ export class AppComponent implements OnInit {
         }
 
         if (finishes === 4) {
-          this.won = true;
-          this.playAudio('win');
-          this.gamesWon++;
-          this.setCookie('won', this.gamesWon.toString());
+          this.winGame();
         } else {
           this.playAudio('complete');
         }
@@ -218,6 +240,33 @@ export class AppComponent implements OnInit {
 
     this.moves++;
     this.playAudio('place');
+  }
+
+  undo(): void {
+    //bug if you finish a col, itll do 2 undoes
+    if (this.undoState.length == 0) {
+      return;
+    }
+
+    if (this.didMoveNotUndo == false) {
+      return;
+    }
+
+    this.selected = null;
+    this.state = this.undoState;
+    this.deck.forEach((x, idx) => x.cheated = this.undoCheated[idx]);
+    this.finished = this.undoFinished;
+    this.didMoveNotUndo = false;
+    this.moves -= 1;
+  }
+
+  winGame(): void {
+    this.won = true;
+    this.playAudio('win');
+    this.gamesWon++;
+    this.setCookie('won', this.gamesWon.toString());
+    this.gameStreak++;
+    this.setCookie('streak', this.gameStreak.toString());
   }
 
   playAudio(name: string): void {
